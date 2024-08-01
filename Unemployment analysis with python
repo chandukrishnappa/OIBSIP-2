@@ -1,0 +1,88 @@
+UNEMPLOYMENT ANALYSIS WITH PYTHON
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+
+data = pd.read_csv("unemployment.csv")
+print(data.head())
+C:\Python39\lib\site-packages\numpy\_distributor_init.py:30: UserWarning: loaded more than 1 DLL from .libs:
+C:\Python39\lib\site-packages\numpy\.libs\libopenblas.FB5AE2TYXYH2IJRDKGDGQ3XBKLKTF43H.gfortran-win_amd64.dll
+C:\Python39\lib\site-packages\numpy\.libs\libopenblas.JPIJNSWNNAN3CE6LLI5FWSPHUT2VXMTH.gfortran-win_amd64.dll
+  warnings.warn("loaded more than 1 DLL from .libs:"
+           Region         Date  Frequency   Estimated Unemployment Rate (%)  \
+0  Andhra Pradesh   31-01-2020          M                              5.48   
+1  Andhra Pradesh   29-02-2020          M                              5.83   
+2  Andhra Pradesh   31-03-2020          M                              5.79   
+3  Andhra Pradesh   30-04-2020          M                             20.51   
+4  Andhra Pradesh   31-05-2020          M                             17.43   
+
+    Estimated Employed   Estimated Labour Participation Rate (%) Region.1  \
+0             16635535                                     41.02    South   
+1             16545652                                     40.90    South   
+2             15881197                                     39.18    South   
+3             11336911                                     33.10    South   
+4             12988845                                     36.46    South   
+
+   longitude  latitude  
+0    15.9129     79.74  
+1    15.9129     79.74  
+2    15.9129     79.74  
+3    15.9129     79.74  
+4    15.9129     79.74  
+#Let’s see if this dataset contains missing values or not:
+
+print(data.isnull().sum())
+Region                                      0
+Date                                        0
+ Frequency                                  0
+ Estimated Unemployment Rate (%)            0
+ Estimated Employed                         0
+ Estimated Labour Participation Rate (%)    0
+Region.1                                    0
+longitude                                   0
+latitude                                    0
+dtype: int64
+#While analyzing the missing values, It was found that the column names are not correct. So, for a better understanding of this data, we will rename all the columns:
+
+data.columns= ["States","Date","Frequency",
+               "Estimated Unemployment Rate",
+               "Estimated Employed",
+               "Estimated Labour Participation Rate",
+               "Region","longitude","latitude"]
+#Now let’s have a look at the correlation between the features of this dataset:
+
+plt.style.use('seaborn-whitegrid')
+plt.figure(figsize=(12, 10))
+sns.heatmap(data.corr())
+plt.show()
+<ipython-input-5-326ee88c8202>:3: MatplotlibDeprecationWarning: The seaborn styles shipped by Matplotlib are deprecated since 3.6, as they no longer correspond to the styles shipped by seaborn. However, they will remain available as 'seaborn-v0_8-<style>'. Alternatively, directly use the seaborn API instead.
+  plt.style.use('seaborn-whitegrid')
+
+Unemployment Rate Analysis: Data Visualization
+Now let’s visualize the data to analyze the unemployment rate. We will first take a look at the estimated number of employees according to different regions of India:
+
+data.columns= ["States","Date","Frequency",
+               "Estimated Unemployment Rate","Estimated Employed",
+               "Estimated Labour Participation Rate","Region",
+               "longitude","latitude"]
+plt.title("Indian Unemployment")
+sns.histplot(x="Estimated Employed", hue="Region", data=data)
+plt.show()
+
+#Now let’s see the unemployment rate according to different regions of India:
+
+plt.figure(figsize=(12, 10))
+plt.title("Indian Unemployment")
+sns.histplot(x="Estimated Unemployment Rate", hue="Region", data=data)
+plt.show()
+
+#Now let’s create a dashboard to analyze the unemployment rate of each Indian state by region. For this, we’ll use a sunburst plot:
+
+unemploment = data[["States", "Region", "Estimated Unemployment Rate"]]
+figure = px.sunburst(unemploment, path=["Region", "States"], 
+                     values="Estimated Unemployment Rate", 
+                     width=700, height=700, color_continuous_scale="RdY1Gn", 
+                     title="Unemployment Rate in India")
+figure.show()
